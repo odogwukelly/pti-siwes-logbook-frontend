@@ -23,6 +23,9 @@ import {
 import { cn } from "@/lib/utils";
 import { PtiLogo } from "./logo";
 import { Button } from "@/components/ui/button";
+import { useAuthUser } from "@/hooks/useAuthUser";
+import { useQueryClient } from "@tanstack/react-query";
+
 
 export type Role = "student" | "industry" | "institution" | "admin";
 
@@ -35,7 +38,6 @@ const navByRole: Record<Role, { section: string; items: NavItem[] }[]> = {
       items: [
         { label: "Dashboard", to: "/dashboard", icon: LayoutDashboard },
         { label: "Daily Log", to: "/dashboard/daily-log", icon: NotebookPen },
-        { label: "Calendar", to: "/dashboard/calendar", icon: CalendarDays },
         { label: "Notifications", to: "/dashboard/notifications", icon: Bell, badge: "3" },
       ],
     },
@@ -43,7 +45,6 @@ const navByRole: Record<Role, { section: string; items: NavItem[] }[]> = {
       section: "Reporting",
       items: [
         { label: "ITF Report", to: "/dashboard/report", icon: FileText },
-        { label: "Evidence", to: "/dashboard/evidence", icon: FolderArchive },
       ],
     },
   ],
@@ -52,7 +53,7 @@ const navByRole: Record<Role, { section: string; items: NavItem[] }[]> = {
       section: "Review",
       items: [
         { label: "Dashboard", to: "/supervisor", icon: LayoutDashboard },
-        { label: "Pending Approvals", to: "/supervisor/approvals", icon: ClipboardCheck, badge: "12" },
+        { label: "Approvals", to: "/supervisor/approvals", icon: ClipboardCheck },
         { label: "My Trainees", to: "/supervisor/trainees", icon: Users },
         { label: "Notifications", to: "/supervisor/notifications", icon: Bell },
       ],
@@ -68,7 +69,7 @@ const navByRole: Record<Role, { section: string; items: NavItem[] }[]> = {
       items: [
         { label: "Dashboard", to: "/institution", icon: LayoutDashboard },
         { label: "Assigned Students", to: "/institution/students", icon: Users },
-        { label: "Analytics", to: "/institution/analytics", icon: BarChart3 },
+        // { label: "Analytics", to: "/institution/analytics", icon: BarChart3 },
         { label: "Approvals", to: "/institution/approvals", icon: ClipboardCheck },
       ],
     },
@@ -94,13 +95,6 @@ const navByRole: Record<Role, { section: string; items: NavItem[] }[]> = {
   ],
 };
 
-const roleLabels: Record<Role, { name: string; sub: string; initials: string }> = {
-  student: { name: "Efe Okoro", sub: "Student · Petroleum Eng.", initials: "EO" },
-  industry: { name: "Engr. S. Adebayo", sub: "Industry Supervisor", initials: "SA" },
-  institution: { name: "Dr. Ngozi Eze", sub: "Institution Supervisor", initials: "NE" },
-  admin: { name: "ITF Officer", sub: "Admin · ITF Liaison", initials: "IT" },
-};
-
 export function DashboardLayout({
   role,
   children,
@@ -117,7 +111,36 @@ export function DashboardLayout({
   const [open, setOpen] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const sections = navByRole[role];
-  const user = roleLabels[role];
+  const queryClient = useQueryClient();
+
+  // Fetch authenticated user (flattened by useAuthUser hook)
+  const { data: authUser } = useAuthUser();
+
+  // Extract fields directly from the flattened UserData interface
+  const fullName = authUser?.full_name;
+  const department = authUser?.department;
+  const userRole = authUser?.role;
+
+  const user = {
+    name: fullName || (
+      role === "student" ? "" :
+        role === "industry" ? "Engr. S. Adebayo" :
+          role === "institution" ? "Dr. Ngozi Eze" : "ITF Officer"
+    ),
+    sub: role === "student"
+      ? (department ? `Student · ${department} Dept.` : "")
+      : role === "industry" ? "Industry Supervisor"
+        : role === "institution" ? "Institution Supervisor"
+          : "Admin · ITF Liaison",
+    initials: fullName
+      ? fullName
+        .split(" ")
+        .map((n: string) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
+      : role === "student" ? "SU" : role === "industry" ? "SA" : role === "institution" ? "NE" : "IT",
+  };
 
   return (
     <div className="min-h-screen flex bg-background text-foreground">
@@ -188,13 +211,22 @@ export function DashboardLayout({
               {user.initials}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold truncate">{user.name}</p>
-              <p className="text-[11px] text-muted-foreground truncate">{user.sub}</p>
+              <p className="text-sm font-semibold capitalize truncate">{user.name}</p>
+              <p className="text-[11px] text-muted-foreground truncate capitalize">{user.sub}</p>
             </div>
             <ChevronDown className="size-4 text-muted-foreground" />
           </div>
           <Link
             to="/login"
+            onClick={() => {
+              // Clear local storage
+              localStorage.removeItem("access_token");
+              localStorage.removeItem("user_data");
+              localStorage.removeItem("registration_data");
+
+              // Clear TanStack Query memory cache so old user data doesn't bleed over
+              queryClient.clear();
+            }}
             className="mt-1 flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:bg-sidebar-accent hover:text-foreground"
           >
             <LogOut className="size-4" /> Sign out
@@ -230,8 +262,23 @@ export function DashboardLayout({
           <div className="flex-1 md:hidden" />
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" className="relative">
-              <Bell className="size-4" />
-              <span className="absolute top-2 right-2 size-1.5 rounded-full bg-pti-accent" />
+              {userRole === "student" ?
+                <>
+                  <Link to="/dashboard/notifications">
+                    <Bell className="size-4" />
+                    <span className="absolute top-2 right-2 size-1.5 rounded-full bg-pti-accent" />
+                  </Link>
+                </>
+                :
+                <>
+                  <Link to="/supervisor/notifications">
+                    <Bell className="size-4" />
+                    <span className="absolute top-2 right-2 size-1.5 rounded-full bg-pti-accent" />
+                  </Link>
+                </>
+              }
+
+
             </Button>
             <div className="size-9 rounded-full bg-secondary text-foreground grid place-items-center text-xs font-bold border border-border">
               {user.initials}

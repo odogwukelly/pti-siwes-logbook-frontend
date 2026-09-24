@@ -9,9 +9,9 @@ export const Route = createFileRoute("/register/")({
 
 const roles = [
   { to: "/register/student" as const, icon: GraduationCap, name: "Student", desc: "PTI student on industrial attachment." },
-  { to: "/register/supervisor" as const, icon: BriefcaseBusiness, name: "Industry Supervisor", desc: "Reviewing and signing trainee logs." },
-  { to: "/register/supervisor" as const, icon: Building2, name: "Institution Supervisor", desc: "PTI lecturer monitoring SIWES placements." },
-  { to: "/register/supervisor" as const, icon: ShieldCheck, name: "ITF / Admin", desc: "Officers overseeing institutional compliance." },
+  { to: "/register/supervisor" as const, icon: BriefcaseBusiness, name: "Supervisor", desc: "Reviewing, monitoring and signing trainee logs." },
+  // { to: "/register/supervisor" as const, icon: Building2, name: "Institution Supervisor", desc: "PTI lecturer monitoring SIWES placements." },
+  // { to: "/register/supervisor" as const, icon: ShieldCheck, name: "ITF / Admin", desc: "Officers overseeing institutional compliance." },
 ];
 
 function RegisterPage() {

@@ -42,6 +42,9 @@ import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminDepartmentsRouteImport } from './routes/admin.departments'
 import { Route as AdminAuditRouteImport } from './routes/admin.audit'
+import { Route as SupervisorNewTraineesRouteImport } from './routes/supervisor.new.trainees'
+import { Route as InstitutionAssignStudentsRouteImport } from './routes/institution.assign.students'
+import { Route as DashboardNewDailyLogRouteImport } from './routes/dashboard.new.daily-log'
 
 const VerifyOtpRoute = VerifyOtpRouteImport.update({
   id: '/verify-otp',
@@ -208,6 +211,22 @@ const AdminAuditRoute = AdminAuditRouteImport.update({
   path: '/audit',
   getParentRoute: () => AdminRoute,
 } as any)
+const SupervisorNewTraineesRoute = SupervisorNewTraineesRouteImport.update({
+  id: '/new/trainees',
+  path: '/new/trainees',
+  getParentRoute: () => SupervisorRoute,
+} as any)
+const InstitutionAssignStudentsRoute =
+  InstitutionAssignStudentsRouteImport.update({
+    id: '/assign/students',
+    path: '/assign/students',
+    getParentRoute: () => InstitutionRoute,
+  } as any)
+const DashboardNewDailyLogRoute = DashboardNewDailyLogRouteImport.update({
+  id: '/new/daily-log',
+  path: '/new/daily-log',
+  getParentRoute: () => DashboardRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -243,6 +262,9 @@ export interface FileRoutesByFullPath {
   '/institution/': typeof InstitutionIndexRoute
   '/register/': typeof RegisterIndexRoute
   '/supervisor/': typeof SupervisorIndexRoute
+  '/dashboard/new/daily-log': typeof DashboardNewDailyLogRoute
+  '/institution/assign/students': typeof InstitutionAssignStudentsRoute
+  '/supervisor/new/trainees': typeof SupervisorNewTraineesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -273,6 +295,9 @@ export interface FileRoutesByTo {
   '/institution': typeof InstitutionIndexRoute
   '/register': typeof RegisterIndexRoute
   '/supervisor': typeof SupervisorIndexRoute
+  '/dashboard/new/daily-log': typeof DashboardNewDailyLogRoute
+  '/institution/assign/students': typeof InstitutionAssignStudentsRoute
+  '/supervisor/new/trainees': typeof SupervisorNewTraineesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -309,6 +334,9 @@ export interface FileRoutesById {
   '/institution/': typeof InstitutionIndexRoute
   '/register/': typeof RegisterIndexRoute
   '/supervisor/': typeof SupervisorIndexRoute
+  '/dashboard/new/daily-log': typeof DashboardNewDailyLogRoute
+  '/institution/assign/students': typeof InstitutionAssignStudentsRoute
+  '/supervisor/new/trainees': typeof SupervisorNewTraineesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -346,6 +374,9 @@ export interface FileRouteTypes {
     | '/institution/'
     | '/register/'
     | '/supervisor/'
+    | '/dashboard/new/daily-log'
+    | '/institution/assign/students'
+    | '/supervisor/new/trainees'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -376,6 +407,9 @@ export interface FileRouteTypes {
     | '/institution'
     | '/register'
     | '/supervisor'
+    | '/dashboard/new/daily-log'
+    | '/institution/assign/students'
+    | '/supervisor/new/trainees'
   id:
     | '__root__'
     | '/'
@@ -411,6 +445,9 @@ export interface FileRouteTypes {
     | '/institution/'
     | '/register/'
     | '/supervisor/'
+    | '/dashboard/new/daily-log'
+    | '/institution/assign/students'
+    | '/supervisor/new/trainees'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -658,6 +695,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAuditRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/supervisor/new/trainees': {
+      id: '/supervisor/new/trainees'
+      path: '/new/trainees'
+      fullPath: '/supervisor/new/trainees'
+      preLoaderRoute: typeof SupervisorNewTraineesRouteImport
+      parentRoute: typeof SupervisorRoute
+    }
+    '/institution/assign/students': {
+      id: '/institution/assign/students'
+      path: '/assign/students'
+      fullPath: '/institution/assign/students'
+      preLoaderRoute: typeof InstitutionAssignStudentsRouteImport
+      parentRoute: typeof InstitutionRoute
+    }
+    '/dashboard/new/daily-log': {
+      id: '/dashboard/new/daily-log'
+      path: '/new/daily-log'
+      fullPath: '/dashboard/new/daily-log'
+      preLoaderRoute: typeof DashboardNewDailyLogRouteImport
+      parentRoute: typeof DashboardRoute
+    }
   }
 }
 
@@ -686,6 +744,7 @@ interface DashboardRouteChildren {
   DashboardNotificationsRoute: typeof DashboardNotificationsRoute
   DashboardReportRoute: typeof DashboardReportRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
+  DashboardNewDailyLogRoute: typeof DashboardNewDailyLogRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
@@ -695,6 +754,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardNotificationsRoute: DashboardNotificationsRoute,
   DashboardReportRoute: DashboardReportRoute,
   DashboardIndexRoute: DashboardIndexRoute,
+  DashboardNewDailyLogRoute: DashboardNewDailyLogRoute,
 }
 
 const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
@@ -707,6 +767,7 @@ interface InstitutionRouteChildren {
   InstitutionExportRoute: typeof InstitutionExportRoute
   InstitutionStudentsRoute: typeof InstitutionStudentsRoute
   InstitutionIndexRoute: typeof InstitutionIndexRoute
+  InstitutionAssignStudentsRoute: typeof InstitutionAssignStudentsRoute
 }
 
 const InstitutionRouteChildren: InstitutionRouteChildren = {
@@ -715,6 +776,7 @@ const InstitutionRouteChildren: InstitutionRouteChildren = {
   InstitutionExportRoute: InstitutionExportRoute,
   InstitutionStudentsRoute: InstitutionStudentsRoute,
   InstitutionIndexRoute: InstitutionIndexRoute,
+  InstitutionAssignStudentsRoute: InstitutionAssignStudentsRoute,
 }
 
 const InstitutionRouteWithChildren = InstitutionRoute._addFileChildren(
@@ -743,6 +805,7 @@ interface SupervisorRouteChildren {
   SupervisorSignatureRoute: typeof SupervisorSignatureRoute
   SupervisorTraineesRoute: typeof SupervisorTraineesRoute
   SupervisorIndexRoute: typeof SupervisorIndexRoute
+  SupervisorNewTraineesRoute: typeof SupervisorNewTraineesRoute
 }
 
 const SupervisorRouteChildren: SupervisorRouteChildren = {
@@ -751,6 +814,7 @@ const SupervisorRouteChildren: SupervisorRouteChildren = {
   SupervisorSignatureRoute: SupervisorSignatureRoute,
   SupervisorTraineesRoute: SupervisorTraineesRoute,
   SupervisorIndexRoute: SupervisorIndexRoute,
+  SupervisorNewTraineesRoute: SupervisorNewTraineesRoute,
 }
 
 const SupervisorRouteWithChildren = SupervisorRoute._addFileChildren(
